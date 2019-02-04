@@ -11,6 +11,7 @@
 #include <QKeyEvent>
 #include <QDebug>
 #include <QWindow>
+#include <QStringList>
 
 #include "subtitles_setup_window.h"
 #include "main_menu.h"
@@ -41,6 +42,14 @@ SubSetupWindow::SubSetupWindow(int num, QWidget *menu, int windowW, int windowH)
     //Label "Choose subtitles:"
     QLabel *lblChoSub1 = new QLabel("Choose subtitles:", mainSubBox);
     lblChoSub1->setGeometry(30, 30, 201, 16);
+
+    //Combobox1 choose codec
+    cboxCodec1 = new QComboBox(mainSubBox);
+    QStringList codecList;
+    codecList << "UTF-8" << "Windows-1251" << "UTF-16" << "CP949" << "KOI8-R" << "KOI8-U" << "UTF-16BE" << "UTF-16LE";
+    cboxCodec1->addItems(codecList);
+    cboxCodec1->setEditable(true);
+    cboxCodec1->setGeometry(232, 20, 171, 31);
 
     //LineEdit, path to main subtitles
     pathMainSubs = new QLineEdit(mainSubBox);
@@ -92,6 +101,13 @@ SubSetupWindow::SubSetupWindow(int num, QWidget *menu, int windowW, int windowH)
     QPushButton *btnBrowseFile2 = new QPushButton("...", translSubBox);
     btnBrowseFile2->setGeometry(390, 60, 30, 30);
     connect(btnBrowseFile2, SIGNAL(clicked()), this, SLOT(browse_file2()));
+
+    //Combobox2 choose codec
+    cboxCodec2 = new QComboBox(translSubBox);
+    swap(codecList[0], codecList[1]);
+    cboxCodec2->addItems(codecList);
+    cboxCodec2->setEditable(true);
+    cboxCodec2->setGeometry(232, 20, 171, 31);
 
     //Button "Configure"
     QPushButton *btnConfigure2 = new QPushButton("Configure", translSubBox);
@@ -166,7 +182,7 @@ void SubSetupWindow::browse_file2() {
 }
 
 void SubSetupWindow::slot_file_selected1(const QString &fileName) {
-    if (mainSubtitles.load_subtitles(fileName)) {
+    if (mainSubtitles.load_subtitles(fileName, cboxCodec1->currentText())) {
         pathMainSubs->setText(fileName);
     }
     else {
@@ -175,7 +191,7 @@ void SubSetupWindow::slot_file_selected1(const QString &fileName) {
 }
 
 void SubSetupWindow::slot_file_selected2(const QString &fileName) {
-    if (transSubtitles.load_subtitles(fileName)) {
+    if (transSubtitles.load_subtitles(fileName, cboxCodec2->currentText())) {
         pathTranslSubs->setText(fileName);
     }
     else {

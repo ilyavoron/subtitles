@@ -8,6 +8,7 @@
 #include "subtitles.h"
 #include "stopwatch.h"
 #include <QLabel>
+#include <QComboBox>
 
 class SubSetupWindow : public QWidget {
     Q_OBJECT
@@ -22,6 +23,7 @@ private:
     QLabel *hint1;
     bool active;
     QWidget *mainMenu;
+    QComboBox *cboxCodec1, *cboxCodec2;
 public:
     explicit SubSetupWindow(int num = 1, QWidget *menu = nullptr, int windowW = 781, int windowH = 422);
 public slots:
