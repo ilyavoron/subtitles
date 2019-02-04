@@ -1,0 +1,9 @@
+#ifndef SUBTITLES_SUBTITLES_WINDOW_H
+#define SUBTITLES_SUBTITLES_WINDOW_H
+
+
+class SubtitlesWindow {
+};
+
+
+#endif //SUBTITLES_SUBTITLES_WINDOW_H
