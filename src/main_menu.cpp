@@ -45,7 +45,7 @@ void MainMenu::space_pressed(size_t id) {
 
 void MainMenu::starts(int add) {
     if (startPressed == 0 && add == 1) {
-        hotkeyManager->registerHotkey("Space");
+        hotkeyManager->registerHotkey("T");
     }
     startPressed += add;
     if (startPressed == 0) {

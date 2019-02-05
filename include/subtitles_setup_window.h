@@ -7,14 +7,18 @@
 #include <QTimeEdit>
 #include "subtitles.h"
 #include "stopwatch.h"
+#include "subtitles_window.h"
 #include <QLabel>
 #include <QComboBox>
+#include <QTimer>
+#include <QDoubleSpinBox>
 
 class SubSetupWindow : public QWidget {
     Q_OBJECT
 private:
     QLineEdit *pathMainSubs, *pathTranslSubs;
     Subtitles mainSubtitles, transSubtitles;
+    SubtitlesWindow mainSubWindow, transSubWindow;
     QFileDialog *fileDialog1, *fileDialog2;
     Stopwatch *clock;
     QDialog *setTimeWindow;
@@ -24,6 +28,8 @@ private:
     bool active;
     QWidget *mainMenu;
     QComboBox *cboxCodec1, *cboxCodec2;
+    QTimer *timer;
+    QDoubleSpinBox *spBoxDelay1, *spBoxDelay2;
 public:
     explicit SubSetupWindow(int num = 1, QWidget *menu = nullptr, int windowW = 781, int windowH = 422);
 public slots:
@@ -36,6 +42,7 @@ public slots:
     void start_clicked();
     void space_pressed();
     void reset_button_pressed();
+    void update_subtitles();
 };
 
 

@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QLabel>
 #include <QTextCodec>
+#include <iostream>
 
 Subtitles::Subtitles() {
     maxTime = 0;
@@ -41,6 +42,9 @@ bool Subtitles::load_subtitles(QString fileName, QString codecName) {
             if (str == "\r\n") {
                 break;
             }
+            str.replace("\r\n", "\n");
+            str.replace("<i>", "");
+            str.replace("</i>", "");
             lines[size].strings.append(str);
             lines[size].size++;
         }
@@ -52,6 +56,7 @@ bool Subtitles::load_subtitles(QString fileName, QString codecName) {
 }
 
 int Subtitles::get_subtitles(int time, QVector <QString> &str) {
+    qDebug() << time << " " << lines[last_ind].time << " " << lines[last_ind + 1].time << "\n";
     if (time >= maxTime) {
         if (last_ind == size - 1) {
             return 0;
@@ -78,7 +83,7 @@ int Subtitles::get_subtitles(int time, QVector <QString> &str) {
             left_b = mid_b;
         }
     }
-    last_ind = right_b;
+    last_ind = left_b;
     str = lines[last_ind].strings;
     return 1;
 }

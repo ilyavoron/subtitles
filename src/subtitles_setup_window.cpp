@@ -19,7 +19,11 @@
 SubSetupWindow::SubSetupWindow(int num, QWidget *menu, int windowW, int windowH) {
     mainMenu = menu;
     active = false;
-    //QWidget::grabKeyboard();
+    //Timer
+    timer = new QTimer(this);
+    timer->setInterval(100);
+    QObject::connect(timer, SIGNAL(timeout()), this, SLOT(update_subtitles()));
+
     //Window
     this->setFixedSize(windowW, windowH);
     QPalette windowCol;
@@ -70,7 +74,7 @@ SubSetupWindow::SubSetupWindow(int num, QWidget *menu, int windowW, int windowH)
     btnSetDel->setGeometry(230, 110, 81, 31);
 
     //Spin box, delay
-    QDoubleSpinBox *spBoxDelay1 = new QDoubleSpinBox(mainSubBox);
+    spBoxDelay1 = new QDoubleSpinBox(mainSubBox);
     spBoxDelay1->setGeometry(320, 110, 61, 31);
     spBoxDelay1->setDecimals(1);
     spBoxDelay1->setMinimum(-1000);
@@ -118,7 +122,7 @@ SubSetupWindow::SubSetupWindow(int num, QWidget *menu, int windowW, int windowH)
     btnSetDel2->setGeometry(230, 110, 81, 31);
 
     //Spin box, delay
-    QDoubleSpinBox *spBoxDelay2 = new QDoubleSpinBox(translSubBox);
+    spBoxDelay2 = new QDoubleSpinBox(translSubBox);
     spBoxDelay2->setGeometry(320, 110, 61, 31);
     spBoxDelay2->setDecimals(1);
     spBoxDelay2->setMinimum(-1000);
@@ -203,7 +207,7 @@ void SubSetupWindow::button_set_time_clicked() {
     int secTime = clock->get_time() / 1000;
     QTime curTime(secTime / 3600, (secTime % 3600) / 60, secTime % 60);
     timeEdit->setTime(curTime);
-    secTime = mainSubtitles.get_max_time() / 1000;
+    secTime = mainSubtitles.get_max_time() / 1000 + (int)spBoxDelay1->value() + 1;
     curTime.setHMS(secTime / 3600, (secTime % 3600) / 60, secTime % 60);
     timeEdit->setMaximumTime(curTime);
     setTimeWindow->show();
@@ -233,15 +237,53 @@ void SubSetupWindow::start_clicked() {
 
 void SubSetupWindow::space_pressed() {
     if (active) {
+
+        /*INPUT ip;
+        // Set up a generic keyboard event.
+        ip.type = INPUT_KEYBOARD;
+        ip.ki.wScan = 0; // hardware scan code for key
+        ip.ki.time = 0;
+        ip.ki.dwExtraInfo = 0;
+
+        // Press the "Space" key
+        ip.ki.wVk = 0x20; // virtual-key code for the "Space" key
+        ip.ki.dwFlags = 0; // 0 for key press
+        SendInput(1, &ip, sizeof(INPUT));
+
+        // Release the "A" key
+        ip.ki.dwFlags = KEYEVENTF_KEYUP; // KEYEVENTF_KEYUP for key release
+        SendInput(1, &ip, sizeof(INPUT));*/
+
+        INPUT input;
+        input.type=INPUT_MOUSE;
+        input.mi.dx=0;
+        input.mi.dy=0;
+        input.mi.dwFlags=(MOUSEEVENTF_ABSOLUTE|MOUSEEVENTF_LEFTDOWN|MOUSEEVENTF_LEFTUP);
+        input.mi.mouseData=0;
+        input.mi.dwExtraInfo=NULL;
+        input.mi.time=0;
+        SendInput(1,&input,sizeof(INPUT));
+
         if (clock->is_active()) {
             clock->stop();
+            timer->stop();
         }
         else {
             clock->start();
+            timer->start();
         }
     }
 }
 
 void SubSetupWindow::reset_button_pressed() {
     clock->set_time(0);
+}
+
+void SubSetupWindow::update_subtitles() {
+    QVector <QString> str;
+    int changed = mainSubtitles.get_subtitles(clock->get_time() - (int)spBoxDelay1->value() * 1000, str);
+    qDebug() << changed << "\n";
+    if (changed) {
+        mainSubWindow.set_text(str);
+    }
 }
