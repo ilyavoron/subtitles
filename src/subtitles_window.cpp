@@ -56,6 +56,7 @@ void SubtitlesWindow::move_center() {
 void SubtitlesWindow::set_text(QVector<QString> &str) {
     if (str.size() == 0) {
         this->hide();
+        return;
     }
     QString string = "";
     QLabel tmplbl;

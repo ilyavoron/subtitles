@@ -56,11 +56,11 @@ bool Subtitles::load_subtitles(QString fileName, QString codecName) {
 }
 
 int Subtitles::get_subtitles(int time, QVector <QString> &str) {
-    qDebug() << time << " " << lines[last_ind].time << " " << lines[last_ind + 1].time << "\n";
     if (time >= maxTime) {
         if (last_ind == size - 1) {
             return 0;
         }
+        last_ind = size - 1;
         return 1;
     }
     if (lines[last_ind].time <= time) {

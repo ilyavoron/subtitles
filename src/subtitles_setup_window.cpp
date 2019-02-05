@@ -282,7 +282,6 @@ void SubSetupWindow::reset_button_pressed() {
 void SubSetupWindow::update_subtitles() {
     QVector <QString> str;
     int changed = mainSubtitles.get_subtitles(clock->get_time() - (int)spBoxDelay1->value() * 1000, str);
-    qDebug() << changed << "\n";
     if (changed) {
         mainSubWindow.set_text(str);
     }
