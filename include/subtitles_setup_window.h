@@ -30,6 +30,7 @@ private:
     QComboBox *cboxCodec1, *cboxCodec2;
     QTimer *timer;
     QDoubleSpinBox *spBoxDelay1, *spBoxDelay2;
+    bool translSubtitlesloaded;
 public:
     explicit SubSetupWindow(int num = 1, QWidget *menu = nullptr, int windowW = 781, int windowH = 422);
 public slots:
@@ -43,6 +44,9 @@ public slots:
     void space_pressed();
     void reset_button_pressed();
     void update_subtitles();
+    void open_settings1();
+    void open_settings2();
+    void update_trans_subtitles();
 };
 
 

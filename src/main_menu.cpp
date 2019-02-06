@@ -1,6 +1,7 @@
 #include "subtitles_setup_window.h"
 #include "main_menu.h"
 #include <QDebug>
+#include <iostream>
 
 MainMenu::MainMenu(int windowW, int windowH) {
     subtitlesOpen = 0;

@@ -15,10 +15,12 @@
 
 #include "subtitles_setup_window.h"
 #include "main_menu.h"
+#include <iostream>
 
 SubSetupWindow::SubSetupWindow(int num, QWidget *menu, int windowW, int windowH) {
     mainMenu = menu;
     active = false;
+    translSubtitlesloaded = false;
     //Timer
     timer = new QTimer(this);
     timer->setInterval(100);
@@ -68,6 +70,7 @@ SubSetupWindow::SubSetupWindow(int num, QWidget *menu, int windowW, int windowH)
     //Button "Configure"
     QPushButton *btnConfigure1 = new QPushButton("Configure", mainSubBox);
     btnConfigure1->setGeometry(30, 110, 93, 31);
+    QObject::connect(btnConfigure1, SIGNAL(clicked()), this, SLOT(open_settings1()));
 
     //Label "Set delay:"
     QLabel *btnSetDel = new QLabel("Set delay:", mainSubBox);
@@ -104,7 +107,7 @@ SubSetupWindow::SubSetupWindow(int num, QWidget *menu, int windowW, int windowH)
     //Button browse file
     QPushButton *btnBrowseFile2 = new QPushButton("...", translSubBox);
     btnBrowseFile2->setGeometry(390, 60, 30, 30);
-    connect(btnBrowseFile2, SIGNAL(clicked()), this, SLOT(browse_file2()));
+    QObject::connect(btnBrowseFile2, SIGNAL(clicked()), this, SLOT(browse_file2()));
 
     //Combobox2 choose codec
     cboxCodec2 = new QComboBox(translSubBox);
@@ -116,6 +119,7 @@ SubSetupWindow::SubSetupWindow(int num, QWidget *menu, int windowW, int windowH)
     //Button "Configure"
     QPushButton *btnConfigure2 = new QPushButton("Configure", translSubBox);
     btnConfigure2->setGeometry(30, 110, 93, 31);
+    QObject::connect(btnConfigure2, SIGNAL(clicked()), this, SLOT(open_settings2()));
 
     //Label "Set delay:"
     QLabel *btnSetDel2 = new QLabel("Set delay:", translSubBox);
@@ -158,7 +162,9 @@ SubSetupWindow::SubSetupWindow(int num, QWidget *menu, int windowW, int windowH)
     hint1->hide();
 
     fileDialog1 = new QFileDialog(this);
+    fileDialog1->setDirectory("C:\\Users\\voron\\Desktop\\subs");
     fileDialog2 = new QFileDialog(this);
+    fileDialog2->setDirectory("C:\\Users\\voron\\Desktop\\subs");
     QObject::connect(fileDialog1, SIGNAL(fileSelected(const QString &)), this, SLOT(slot_file_selected1(const QString &)));
     QObject::connect(fileDialog2, SIGNAL(fileSelected(const QString &)), this, SLOT(slot_file_selected2(const QString &)));
 
@@ -175,6 +181,9 @@ SubSetupWindow::SubSetupWindow(int num, QWidget *menu, int windowW, int windowH)
     QPushButton *btnCancel = new QPushButton("Cancel", setTimeWindow);
     btnCancel->setGeometry(180, 110, 93, 41);
     QObject::connect(btnCancel, SIGNAL(clicked()), setTimeWindow, SLOT(close()));
+
+    transSubWindow.set_center_coords(960, 950);
+    transSubWindow.change_text_color(QColor::fromRgb(217, 217, 58));
 }
 
 void SubSetupWindow::browse_file1() {
@@ -197,6 +206,7 @@ void SubSetupWindow::slot_file_selected1(const QString &fileName) {
 void SubSetupWindow::slot_file_selected2(const QString &fileName) {
     if (transSubtitles.load_subtitles(fileName, cboxCodec2->currentText())) {
         pathTranslSubs->setText(fileName);
+        translSubtitlesloaded = true;
     }
     else {
         pathTranslSubs->setText("Failed to load subtitles");
@@ -267,10 +277,17 @@ void SubSetupWindow::space_pressed() {
         if (clock->is_active()) {
             clock->stop();
             timer->stop();
+            if (translSubtitlesloaded) {
+                update_trans_subtitles();
+                transSubWindow.show();
+            }
         }
         else {
             clock->start();
             timer->start();
+            if (translSubtitlesloaded) {
+                transSubWindow.hide();
+            }
         }
     }
 }
@@ -284,5 +301,23 @@ void SubSetupWindow::update_subtitles() {
     int changed = mainSubtitles.get_subtitles(clock->get_time() - (int)spBoxDelay1->value() * 1000, str);
     if (changed) {
         mainSubWindow.set_text(str);
+    }
+}
+
+void SubSetupWindow::open_settings1() {
+    mainSubWindow.show_settings();
+    mainSubWindow.show();
+}
+
+void SubSetupWindow::open_settings2() {
+    transSubWindow.show_settings();
+    transSubWindow.show();
+}
+
+void SubSetupWindow::update_trans_subtitles() {
+    QVector <QString> str;
+    int changed = transSubtitles.get_subtitles(clock->get_time() - (int)spBoxDelay2->value() * 1000, str);
+    if (changed) {
+        transSubWindow.set_text(str);
     }
 }
