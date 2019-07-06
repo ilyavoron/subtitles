@@ -10,7 +10,7 @@ Subtitles::Subtitles() {
     last_ind = 0;
 }
 
-bool Subtitles::load_subtitles(QString fileName, QString codecName) {
+bool Subtitles::load_subtitles(QString fileName, QString codecName, bool isTrans) {
     QTextCodec *codec = QTextCodec::codecForName(codecName.toUtf8());
     for (int i = 0; i < fileName.size(); i++) {
         if (fileName[i] == '/') {
@@ -22,34 +22,76 @@ bool Subtitles::load_subtitles(QString fileName, QString codecName) {
     lines.append(Title(0));
     size++;
     QString str;
-    while (!file->atEnd()) {
-        str = file->readLine();
-        if (str == "") {
-            break;
-        }
-        str = (file->readLine());
-        int hour = str.mid(0, 2).toInt();
-        int min = str.mid(3, 2).toInt();
-        int sec = str.mid(6, 2).toInt();
-        int msec = str.mid(9, 3).toInt() + (hour * 3600 + min * 60 + sec) * 1000;
-        lines.append(Title(msec));
-        hour = str.mid(17, 2).toInt();
-        min = str.mid(20, 2).toInt();
-        sec = str.mid(23, 2).toInt();
-        msec = str.mid(26, 3).toInt() + (hour * 3600 + min * 60 + sec) * 1000;
+    if (!isTrans) {
         while (!file->atEnd()) {
-            str = codec->toUnicode(file->readLine());
-            if (str == "\r\n") {
+            str = file->readLine();
+            if (str == "") {
                 break;
             }
-            str.replace("\r\n", "\n");
-            str.replace("<i>", "");
-            str.replace("</i>", "");
-            lines[size].strings.append(str);
-            lines[size].size++;
+            str = (file->readLine());
+            int hour = str.mid(0, 2).toInt();
+            int min = str.mid(3, 2).toInt();
+            int sec = str.mid(6, 2).toInt();
+            int msec = str.mid(9, 3).toInt() + (hour * 3600 + min * 60 + sec) * 1000;
+            lines.append(Title(msec));
+            hour = str.mid(17, 2).toInt();
+            min = str.mid(20, 2).toInt();
+            sec = str.mid(23, 2).toInt();
+            msec = str.mid(26, 3).toInt() + (hour * 3600 + min * 60 + sec) * 1000;
+            while (!file->atEnd()) {
+                str = codec->toUnicode(file->readLine());
+                if (str == "\r\n") {
+                    break;
+                }
+                str.replace("\r\n", "\n");
+                str.replace("<i>", "");
+                str.replace("</i>", "");
+                lines[size].strings.append(str);
+                lines[size].size++;
+            }
+            lines.append(Title(msec));
+            size += 2;
         }
-        lines.append(Title(msec));
-        size += 2;
+    }
+    else {
+        int lastTime = 0;
+        str = file->readLine();
+        str = (file->readLine());
+        while (!file->atEnd()) {
+            lines.append(Title(lastTime + 1));
+            int hour = str.mid(17, 2).toInt();
+            int min = str.mid(20, 2).toInt();
+            int sec = str.mid(23, 2).toInt();
+            int msec1 = str.mid(26, 3).toInt() + (hour * 3600 + min * 60 + sec) * 1000;
+            while (!file->atEnd()) {
+                str = codec->toUnicode(file->readLine());
+                if (str == "\r\n") {
+                    break;
+                }
+                str.replace("\r\n", "\n");
+                str.replace("<i>", "");
+                str.replace("</i>", "");
+                lines[size].strings.append(str);
+                lines[size].size++;
+            }
+            str = file->readLine();
+            if (str == "") {
+                lines.append(msec1);
+                size += 2;
+                break;
+            }
+            str = file->readLine();
+            hour = str.mid(0, 2).toInt();
+            min = str.mid(3, 2).toInt();
+            sec = str.mid(6, 2).toInt();
+            int msec2 = str.mid(9, 3).toInt() + (hour * 3600 + min * 60 + sec) * 1000;
+            lastTime = (msec1 + msec2) / 2;
+            if (lastTime < 20000) {
+                std::cerr << lastTime << "\n";
+            }
+            lines.append(Title(lastTime));
+            size += 2;
+        }
     }
     maxTime = lines.back().time;
     return true;

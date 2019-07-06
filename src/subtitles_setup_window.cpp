@@ -195,7 +195,7 @@ void SubSetupWindow::browse_file2() {
 }
 
 void SubSetupWindow::slot_file_selected1(const QString &fileName) {
-    if (mainSubtitles.load_subtitles(fileName, cboxCodec1->currentText())) {
+    if (mainSubtitles.load_subtitles(fileName, cboxCodec1->currentText(), 0)) {
         pathMainSubs->setText(fileName);
     }
     else {
@@ -204,7 +204,7 @@ void SubSetupWindow::slot_file_selected1(const QString &fileName) {
 }
 
 void SubSetupWindow::slot_file_selected2(const QString &fileName) {
-    if (transSubtitles.load_subtitles(fileName, cboxCodec2->currentText())) {
+    if (transSubtitles.load_subtitles(fileName, cboxCodec2->currentText(), 1)) {
         pathTranslSubs->setText(fileName);
         translSubtitlesloaded = true;
     }

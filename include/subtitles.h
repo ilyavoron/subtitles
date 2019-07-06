@@ -22,7 +22,7 @@ private:
     int last_ind;
 public:
     Subtitles();
-    bool load_subtitles(QString fileName, QString codecName);
+    bool load_subtitles(QString fileName, QString codecName, bool isTrans);
     int get_subtitles(int time, QVector <QString> &str); //in msec
     int get_max_time();
 };
