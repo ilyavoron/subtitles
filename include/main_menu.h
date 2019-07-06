@@ -29,7 +29,7 @@ public:
     void starts(int add);
 public slots:
     void open_new_subtitles();
-    void space_pressed(size_t id);
+    void global_hotkey_pressed(size_t id);
 };
 
 

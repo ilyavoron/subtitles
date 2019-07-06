@@ -41,7 +41,9 @@ public slots:
     void button_set_time_clicked();
     void set_time();
     void start_clicked();
-    void space_pressed();
+    void stop_pressed();
+    void rewind_back_pressed();
+    void rewind_forward_pressed();
     void reset_button_pressed();
     void update_subtitles();
     void open_settings1();

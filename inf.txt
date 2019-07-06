@@ -1,0 +1,4 @@
+R - +10
+Y - -10
+T - stop
+https://github.com/igrigorik/videospeed

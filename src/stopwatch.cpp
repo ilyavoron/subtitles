@@ -16,8 +16,8 @@ Stopwatch::Stopwatch(QWidget *parent) {
     this->resize(280, 60);
 }
 
-void Stopwatch::incr_time() {
-    curTime++;
+void Stopwatch::incr_time(int a) {
+    curTime += a;
 }
 
 void Stopwatch::show_time() {

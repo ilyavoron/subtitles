@@ -18,8 +18,8 @@ public:
     bool is_active();
 private slots:
     void show_time();
-    void incr_time();
 public slots:
+    void incr_time(int a = 1);
     void stop();
     void start();
     void set_time(int sec);

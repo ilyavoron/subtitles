@@ -24,7 +24,7 @@ MainMenu::MainMenu(int windowW, int windowH) {
 
     //global hotkeys
     hotkeyManager = new UGlobalHotkeys(subtitlesLayoutWindow);
-    QObject::connect(hotkeyManager, SIGNAL(activated(size_t)), this, SLOT(space_pressed(size_t)));
+    QObject::connect(hotkeyManager, SIGNAL(activated(size_t)), this, SLOT(global_hotkey_pressed(size_t)));
 }
 
 void MainMenu::open_new_subtitles() {
@@ -38,15 +38,30 @@ void MainMenu::open_new_subtitles() {
     subtitlesLayoutWindow->show();
 }
 
-void MainMenu::space_pressed(size_t id) {
-    for (auto widget : subWindows) {
-        widget->space_pressed();
+void MainMenu::global_hotkey_pressed(size_t id) {
+    std::cerr << id << "\n";
+    if (id == 0) {
+        for (auto widget : subWindows) {
+            widget->stop_pressed();
+        }
+    }
+    if (id == 1) {
+        for (auto widget : subWindows) {
+            widget->rewind_back_pressed();
+        }
+    }
+    if (id == 2) {
+        for (auto widget : subWindows) {
+            widget->rewind_forward_pressed();
+        }
     }
 }
 
 void MainMenu::starts(int add) {
     if (startPressed == 0 && add == 1) {
-        hotkeyManager->registerHotkey("T");
+        hotkeyManager->registerHotkey("T", 0);
+        hotkeyManager->registerHotkey("R", 1);
+        hotkeyManager->registerHotkey("Y", 2);
     }
     startPressed += add;
     if (startPressed == 0) {
