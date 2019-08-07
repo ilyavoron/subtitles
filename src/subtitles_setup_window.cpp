@@ -336,6 +336,18 @@ void SubSetupWindow::reset_button_pressed() {
     clock->set_time(0);
 }
 
+void SubSetupWindow::reset_subs_pressed() {
+    clock->reset_timer();
+}
+
+void SubSetupWindow::rewind_back_subs_pressed() {
+    clock->rewind_timer(-200);
+}
+
+void SubSetupWindow::rewind_forward_subs_pressed() {
+    clock->rewind_timer(200);
+}
+
 void SubSetupWindow::update_subtitles() {
     QVector <QString> str;
     int changed = mainSubtitles.get_subtitles(clock->get_time() - (int)spBoxDelay1->value() * 1000, str);
@@ -359,5 +371,14 @@ void SubSetupWindow::update_trans_subtitles() {
     int changed = transSubtitles.get_subtitles(clock->get_time() - (int)spBoxDelay2->value() * 1000, str);
     if (changed) {
         transSubWindow.set_text(str);
+    }
+}
+
+void SubSetupWindow::change_minitimer_visibility() {
+    if (miniTimer.isVisible()) {
+        miniTimer.hide();
+    }
+    else {
+        miniTimer.show();
     }
 }

@@ -19,10 +19,6 @@ Stopwatch::Stopwatch(QWidget *parent) {
 
 void Stopwatch::incr_time(int a) {
     curTime += a;
-}
-
-void Stopwatch::show_time() {
-    timer->setInterval(1000);
     int ch = curTime / 3600;
     int cm = (curTime % 3600) / 60;
     int cs = curTime % 60;
@@ -30,6 +26,10 @@ void Stopwatch::show_time() {
     QString text = time.toString("hh:mm:ss");
     this->display(text);
     emit time_changed(text);
+}
+
+void Stopwatch::show_time() {
+    timer->setInterval(1000);
 }
 
 void Stopwatch::start() {
@@ -62,4 +62,45 @@ void Stopwatch::set_time(int sec) {
 
 bool Stopwatch::is_active() {
     return timer->isActive();
+}
+
+void Stopwatch::reset_timer() {
+    if (timer->isActive()) {
+        timer->setInterval(1000);
+    }
+    else {
+        timerStart = 1000;
+    }
+}
+
+void Stopwatch::rewind_timer(int a) {
+    a = -a;
+    int remTime = timer->remainingTime();
+    if (timer->isActive()) {
+        if (remTime + a > 1000) {
+            timer->setInterval((remTime + a) % 1000);
+            incr_time(-((remTime + a - 1) / 1000));
+            return;
+        }
+        if (remTime + a <= 0) {
+            timer->setInterval(1000 - (-(remTime + a)) % 1000);
+            incr_time((-(remTime + a) - 1) / 1000 + 1);
+            return;
+        }
+        timer->setInterval(remTime + a);
+    }
+    else {
+        remTime = timerStart;
+        if (remTime + a > 1000) {
+            timerStart = ((remTime + a) % 1000);
+            incr_time(-((remTime + a - 1) / 1000));
+            return;
+        }
+        if (remTime + a <= 0) {
+            timerStart = (1000 - (-(remTime + a)) % 1000);
+            incr_time((-(remTime + a) - 1) / 1000 + 1);
+            return;
+        }
+        timerStart = (remTime + a);
+    }
 }

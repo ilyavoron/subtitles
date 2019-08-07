@@ -53,10 +53,14 @@ public slots:
     void rewind_back_pressed();
     void rewind_forward_pressed();
     void reset_button_pressed();
+    void reset_subs_pressed(); //reset to begin of current second
+    void rewind_back_subs_pressed(); //rewind back 0.2sec
+    void rewind_forward_subs_pressed(); // rewind forwards 0.2sec
     void update_subtitles();
     void open_settings1();
     void open_settings2();
     void update_trans_subtitles();
+    void change_minitimer_visibility();
 };
 
 

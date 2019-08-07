@@ -55,6 +55,26 @@ void MainMenu::global_hotkey_pressed(size_t id) {
             widget->rewind_forward_pressed();
         }
     }
+    if (id == 3) {
+        for (auto widget : subWindows) {
+            widget->rewind_back_subs_pressed();
+        }
+    }
+    if (id == 4) {
+        for (auto widget : subWindows) {
+            widget->reset_subs_pressed();
+        }
+    }
+    if (id == 5) {
+        for (auto widget : subWindows) {
+            widget->rewind_forward_subs_pressed();
+        }
+    }
+    if (id == 6) {
+        for (auto widget : subWindows) {
+            widget->change_minitimer_visibility();
+        }
+    }
 }
 
 void MainMenu::starts(int add) {
@@ -62,6 +82,10 @@ void MainMenu::starts(int add) {
         hotkeyManager->registerHotkey("T", 0);
         hotkeyManager->registerHotkey("R", 1);
         hotkeyManager->registerHotkey("Y", 2);
+        hotkeyManager->registerHotkey("Q", 3);
+        hotkeyManager->registerHotkey("W", 4);
+        hotkeyManager->registerHotkey("E", 5);
+        hotkeyManager->registerHotkey("H", 6);
     }
     startPressed += add;
     if (startPressed == 0) {
