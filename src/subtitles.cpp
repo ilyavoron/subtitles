@@ -86,9 +86,6 @@ bool Subtitles::load_subtitles(QString fileName, QString codecName, bool isTrans
             sec = str.mid(6, 2).toInt();
             int msec2 = str.mid(9, 3).toInt() + (hour * 3600 + min * 60 + sec) * 1000;
             lastTime = (msec1 + msec2) / 2;
-            if (lastTime < 20000) {
-                std::cerr << lastTime << "\n";
-            }
             lines.append(Title(lastTime));
             size += 2;
         }

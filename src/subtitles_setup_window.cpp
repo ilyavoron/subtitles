@@ -17,7 +17,13 @@
 #include "main_menu.h"
 #include <iostream>
 
-SubSetupWindow::SubSetupWindow(int num, QWidget *menu, int windowW, int windowH) {
+
+void MiniTimer::change_time(QString timeString) {
+    this->setText(timeString);
+}
+
+
+SubSetupWindow::SubSetupWindow(QSize screenSize_, int num, QWidget *menu, int windowW, int windowH) {
     mainMenu = menu;
     active = false;
     translSubtitlesloaded = false;
@@ -184,6 +190,12 @@ SubSetupWindow::SubSetupWindow(int num, QWidget *menu, int windowW, int windowH)
 
     transSubWindow.set_center_coords(960, 950);
     transSubWindow.change_text_color(QColor::fromRgb(217, 217, 58));
+
+    //miniTimer
+    QObject::connect(clock, SIGNAL(time_changed(QString)), &miniTimer, SLOT(change_time(QString)));
+    miniTimer.setGeometry(screenSize_.width() - 75, 0, 75, 20);
+    miniTimer.setWindowFlags(Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint);
+    miniTimer.show();
 }
 
 void SubSetupWindow::browse_file1() {
@@ -288,7 +300,7 @@ void SubSetupWindow::stop_pressed() {
         input.mi.dy=0;
         input.mi.dwFlags=(MOUSEEVENTF_ABSOLUTE|MOUSEEVENTF_LEFTDOWN|MOUSEEVENTF_LEFTUP);
         input.mi.mouseData=0;
-        input.mi.dwExtraInfo=NULL;
+        input.mi.dwExtraInfo=0;
         input.mi.time=0;
         SendInput(1,&input,sizeof(INPUT));
 

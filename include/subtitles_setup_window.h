@@ -13,6 +13,13 @@
 #include <QTimer>
 #include <QDoubleSpinBox>
 
+
+class MiniTimer : public QLabel {
+    Q_OBJECT
+public slots:
+    void change_time(QString timeText);
+};
+
 class SubSetupWindow : public QWidget {
     Q_OBJECT
 private:
@@ -31,8 +38,9 @@ private:
     QTimer *timer;
     QDoubleSpinBox *spBoxDelay1, *spBoxDelay2;
     bool translSubtitlesloaded;
+    MiniTimer miniTimer;
 public:
-    explicit SubSetupWindow(int num = 1, QWidget *menu = nullptr, int windowW = 781, int windowH = 422);
+    explicit SubSetupWindow(QSize screenSize_, int num = 1, QWidget *menu = nullptr, int windowW = 781, int windowH = 422);
 public slots:
     void browse_file1();
     void browse_file2();

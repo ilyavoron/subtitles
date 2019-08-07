@@ -2,6 +2,7 @@
 #include <QTime>
 #include <QDebug>
 #include <unistd.h>
+#include <iostream>
 
 Stopwatch::Stopwatch(QWidget *parent) {
     curTime = 0;
@@ -28,6 +29,7 @@ void Stopwatch::show_time() {
     QTime time(ch, cm, cs);
     QString text = time.toString("hh:mm:ss");
     this->display(text);
+    emit time_changed(text);
 }
 
 void Stopwatch::start() {

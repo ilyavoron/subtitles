@@ -3,7 +3,8 @@
 #include <QDebug>
 #include <iostream>
 
-MainMenu::MainMenu(int windowW, int windowH) {
+MainMenu::MainMenu(QSize screenSize_, int windowW, int windowH) {
+    screenSize = screenSize_;
     subtitlesOpen = 0;
     startPressed = 0;
     int buttonW = 2 * windowW / 3, buttonH = windowH / 4;
@@ -31,7 +32,7 @@ void MainMenu::open_new_subtitles() {
     if (subtitlesOpen == 2) {
         return;
     }
-    SubSetupWindow *newSub = new SubSetupWindow(++subtitlesOpen, this);
+    SubSetupWindow *newSub = new SubSetupWindow(screenSize, ++subtitlesOpen, this);
     subWindows.append(newSub);
     subtitlesLayout->addWidget(newSub);
     subtitlesLayoutWindow->setLayout(subtitlesLayout);
@@ -39,7 +40,6 @@ void MainMenu::open_new_subtitles() {
 }
 
 void MainMenu::global_hotkey_pressed(size_t id) {
-    std::cerr << id << "\n";
     if (id == 0) {
         for (auto widget : subWindows) {
             widget->stop_pressed();

@@ -24,8 +24,9 @@ private:
     int subtitlesOpen;
     int startPressed;
     UGlobalHotkeys *hotkeyManager;
+    QSize screenSize;
 public:
-    explicit MainMenu(int windowW = 300, int windowH = 200);
+    explicit MainMenu(QSize screenSize_, int windowW = 300, int windowH = 200);
     void starts(int add);
 public slots:
     void open_new_subtitles();

@@ -23,6 +23,8 @@ public slots:
     void stop();
     void start();
     void set_time(int sec);
+signals:
+    void time_changed(QString timeString);
 };
 
 
