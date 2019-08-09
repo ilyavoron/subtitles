@@ -5,6 +5,7 @@
 #include <QFont>
 #include <QLabel>
 #include <QApplication>
+#include <QTimer>
 
 #include "subtitles_settings.h"
 
@@ -13,8 +14,16 @@ class SubtitlesWindow : public QWidget {
 private:
     SubtitlesSettings *settings;
     QLabel *lbl;
+    QVector <QRect> wordsBounds;
+    QVector <QString> words;
+    QTimer timer;
+    int curWordIndex;
+
+    int string_width(QString &str);
+private slots:
+    void check_bounds();
 public:
-    SubtitlesWindow();
+    SubtitlesWindow(bool isTransl = false);
     void paintEvent(QPaintEvent *event);
     void set_center_coords(int x, int y);
     void move_center();

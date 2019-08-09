@@ -4,8 +4,10 @@
 #include <QPaintEvent>
 #include <QBrush>
 #include <QDebug>
+#include <QChar>
+#include <iostream>
 
-SubtitlesWindow::SubtitlesWindow() {
+SubtitlesWindow::SubtitlesWindow(bool isTransl) {
     this->setFocusPolicy(Qt::NoFocus);
     this->setFixedSize(400, 50);
     this->setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
@@ -29,6 +31,14 @@ SubtitlesWindow::SubtitlesWindow() {
     tmpv.append("Test Test Test Test Test\n");
     this->set_text(tmpv);
     this->hide();
+
+    if (!isTransl) {
+        timer.setInterval(100);
+        timer.start();
+        QObject::connect(&timer, SIGNAL(timeout()), this, SLOT(check_bounds()));
+    }
+
+    curWordIndex = -1;
 }
 
 void SubtitlesWindow::paintEvent(QPaintEvent *event) {
@@ -60,6 +70,12 @@ void SubtitlesWindow::move_center() {
 }
 
 void SubtitlesWindow::set_text(QVector<QString> &str) {
+    if (str.size() == 0) {
+        set_text("", 0, 0);
+        return;
+    }
+    words.clear();
+    wordsBounds.clear();
     QString string = "";
     QLabel tmplbl;
     tmplbl.hide();
@@ -69,6 +85,47 @@ void SubtitlesWindow::set_text(QVector<QString> &str) {
         string += str[i];
         tmplbl.setText(str[i]);
         w = std::max(w, tmplbl.fontMetrics().boundingRect(tmplbl.text()).width() + 10);
+    }
+
+    //finding words bounds
+    int h = lbl->fontMetrics().boundingRect(string).height();
+    int spaceWidth = lbl->fontMetrics().boundingRect("a a").width() -
+            lbl->fontMetrics().boundingRect("aa").width();
+    QString curWord = "";
+    int curPos = 0;
+    int curRow = 0;
+    int curx = w / 2 - string_width(str[curRow]) / 2;
+    int cury = 0;
+    while (curPos < string.size()) {
+        if (string.at(curPos).QChar::isLetter()) {
+            curWord += string[curPos];
+        }
+        else {
+            if (curWord != "") {
+                words.push_back(curWord);
+                wordsBounds.push_back(QRect(curx, cury, string_width(curWord), h));
+                curx += string_width(curWord);
+            }
+            curWord = "";
+            if (string[curPos] == '\n') {
+                cury += h;
+                curRow++;
+                if (curRow < str.size()) {
+                    curx = w / 2 - string_width(str[curRow]) / 2;
+                }
+            }
+            else {
+                if (string[curPos] == ' ') {
+                    curx += spaceWidth;
+                }
+                else {
+                    QString tmps = "";
+                    tmps += string[curPos];
+                    curx += string_width(tmps);
+                }
+            }
+        }
+        curPos++;
     }
     set_text(string, str.size(), w);
 }
@@ -101,4 +158,21 @@ void SubtitlesWindow::show_settings() {
 
 void SubtitlesWindow::change_text_color(QColor col) {
     this->settings->change_text_color(col);
+}
+
+int SubtitlesWindow::string_width(QString &str) {
+    return lbl->fontMetrics().boundingRect(str).width();
+}
+
+void SubtitlesWindow::check_bounds() {
+    QPoint globalCursorPos = QCursor::pos();
+    for (int i = 0; i < (int)wordsBounds.size(); i++) {
+        QRect wordGlobalBounds = wordsBounds[i];
+        wordGlobalBounds.translate(this->x(), this->y());
+        if (wordGlobalBounds.contains(globalCursorPos)) {
+            curWordIndex = i;
+            return;
+        }
+    }
+    curWordIndex = -1;
 }

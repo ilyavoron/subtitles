@@ -25,7 +25,7 @@ class SubSetupWindow : public QWidget {
 private:
     QLineEdit *pathMainSubs, *pathTranslSubs;
     Subtitles mainSubtitles, transSubtitles;
-    SubtitlesWindow mainSubWindow, transSubWindow;
+    SubtitlesWindow mainSubWindow, transSubWindow{true};
     QFileDialog *fileDialog1, *fileDialog2;
     Stopwatch *clock;
     QDialog *setTimeWindow;
