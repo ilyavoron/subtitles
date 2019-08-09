@@ -48,6 +48,10 @@ void SubtitlesWindow::paintEvent(QPaintEvent *event) {
     painter->setPen(settings->backgroundColor);
     painter->setBrush(*brush);
     painter->drawRect(this->rect());
+    painter->setOpacity(1);
+    if (curWordIndex != -1) {
+        painter->drawRect(wordsBounds[curWordIndex]);
+    }
     QPalette windowCol;
     windowCol.setColor(QPalette::WindowText, settings->textColor);
     this->setPalette(windowCol);
@@ -89,13 +93,12 @@ void SubtitlesWindow::set_text(QVector<QString> &str) {
 
     //finding words bounds
     int h = lbl->fontMetrics().boundingRect(string).height();
-    int spaceWidth = lbl->fontMetrics().boundingRect("a a").width() -
-            lbl->fontMetrics().boundingRect("aa").width();
     QString curWord = "";
     int curPos = 0;
     int curRow = 0;
-    int curx = w / 2 - string_width(str[curRow]) / 2;
+    int curx = w / 2 - string_width(str[curRow]) / 2 - 5; //curString begining x coord
     int cury = 0;
+    QString curString = "";
     while (curPos < string.size()) {
         if (string.at(curPos).QChar::isLetter()) {
             curWord += string[curPos];
@@ -103,28 +106,21 @@ void SubtitlesWindow::set_text(QVector<QString> &str) {
         else {
             if (curWord != "") {
                 words.push_back(curWord);
-                wordsBounds.push_back(QRect(curx, cury, string_width(curWord), h));
-                curx += string_width(curWord);
+                wordsBounds.push_back(QRect(curx + string_width(curString) - string_width(curWord), cury,
+                                            string_width(curWord) + 5, h + 5));
             }
             curWord = "";
             if (string[curPos] == '\n') {
                 cury += h;
                 curRow++;
                 if (curRow < str.size()) {
-                    curx = w / 2 - string_width(str[curRow]) / 2;
+                    curx = w / 2 - string_width(str[curRow]) / 2 - 5;
                 }
+                curString = "";
             }
-            else {
-                if (string[curPos] == ' ') {
-                    curx += spaceWidth;
-                }
-                else {
-                    QString tmps = "";
-                    tmps += string[curPos];
-                    curx += string_width(tmps);
-                }
-            }
+
         }
+        curString += string[curPos];
         curPos++;
     }
     set_text(string, str.size(), w);
@@ -170,9 +166,15 @@ void SubtitlesWindow::check_bounds() {
         QRect wordGlobalBounds = wordsBounds[i];
         wordGlobalBounds.translate(this->x(), this->y());
         if (wordGlobalBounds.contains(globalCursorPos)) {
-            curWordIndex = i;
+            if (curWordIndex != i) {
+                curWordIndex = i;
+                this->update();
+            }
             return;
         }
     }
-    curWordIndex = -1;
+    if (curWordIndex != -1) {
+        curWordIndex = -1;
+        this->update();
+    }
 }
