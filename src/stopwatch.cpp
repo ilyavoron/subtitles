@@ -30,6 +30,7 @@ void Stopwatch::incr_time(int a) {
 
 void Stopwatch::show_time() {
     timer->setInterval(1000);
+    incr_time(0);
 }
 
 void Stopwatch::start() {
