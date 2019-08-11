@@ -12,19 +12,30 @@
 class SubtitlesWindow : public QWidget {
     Q_OBJECT
 private:
+    class TranslationWindow : public QWidget {
+    private:
+        QLabel wordToTranslate{this};
+    public:
+        TranslationWindow();
+        void translate(QString word);
+    };
+
     SubtitlesSettings *settings;
     QLabel *lbl;
     QVector <QRect> wordsBounds;
     QVector <QString> words;
     QTimer timer;
     int curWordIndex;
+    TranslationWindow translWindow;
 
     int string_width(QString &str);
+    void paintEvent(QPaintEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent * event) override;
+
 private slots:
     void check_bounds();
 public:
     SubtitlesWindow(bool isTransl = false);
-    void paintEvent(QPaintEvent *event);
     void set_center_coords(int x, int y);
     void move_center();
     void set_text(QVector <QString> &str);

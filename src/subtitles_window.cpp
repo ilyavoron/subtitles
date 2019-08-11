@@ -24,6 +24,7 @@ SubtitlesWindow::SubtitlesWindow(bool isTransl) {
     lbl->setTextInteractionFlags(Qt::TextSelectableByMouse);
     lbl->setFont(settings->font);
     lbl->setWindowFlags(Qt::WindowStaysOnTopHint);
+    lbl->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     move_center();
 
     QVector <QString> tmpv;
@@ -39,6 +40,10 @@ SubtitlesWindow::SubtitlesWindow(bool isTransl) {
     }
 
     curWordIndex = -1;
+
+    if (isTransl) {
+        translWindow.close();
+    }
 }
 
 void SubtitlesWindow::paintEvent(QPaintEvent *event) {
@@ -177,4 +182,23 @@ void SubtitlesWindow::check_bounds() {
         curWordIndex = -1;
         this->update();
     }
+}
+
+void SubtitlesWindow::mouseReleaseEvent(QMouseEvent *event) {
+    if(event->button() == Qt::LeftButton)  {
+        if (curWordIndex != -1) {
+            translWindow.show();
+            translWindow.translate(words[curWordIndex]);
+        }
+    }
+}
+
+SubtitlesWindow::TranslationWindow::TranslationWindow() {
+    this->setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
+    this->resize(200, 200);
+}
+
+void SubtitlesWindow::TranslationWindow::translate(QString word) {
+    wordToTranslate.setText(word);
+    wordToTranslate.adjustSize();
 }
