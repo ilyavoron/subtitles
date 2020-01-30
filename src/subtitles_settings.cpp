@@ -82,7 +82,7 @@ SubtitlesSettings::SubtitlesSettings(QWidget *_subtitlesWindow){
     btnOk->setGeometry(20, 350, 93, 28);
     QObject::connect(btnOk, SIGNAL(clicked()), this, SLOT(ok_pressed()));
 
-    QPushButton *btnReset = new QPushBut ton("Reset", this);
+    QPushButton *btnReset = new QPushButton("Reset", this);
     btnReset->setGeometry(140, 350, 93, 28);
     QObject::connect(btnReset, SIGNAL(clicked()), this, SLOT(reset_settings()));
 }
