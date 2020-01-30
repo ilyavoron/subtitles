@@ -8,8 +8,8 @@ class Translator : public QObject {
     Q_OBJECT
 public:
     Translator();
-public slots:
     void translate(QString text, QString fromL = "en", QString toL = "ru");
+    void abort_all();
 signals:
     void translated(QString text);
 private:

@@ -5,7 +5,6 @@
 #include <QNetworkReply>
 #include <QJsonArray>
 #include <QFile>
-#include <QDebug>
 
 Translator::Translator() {
     manager = new QNetworkAccessManager();
@@ -28,13 +27,26 @@ void Translator::translate(QString text, QString fromL, QString toL) {
                                  "&lang=en-ru"));
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader,
                 "application/json; charset=utf-8");
+    abort_all();
     manager->post(request, QByteArray());
 }
 
 void Translator::onfinish(QNetworkReply *reply) {
-    QJsonDocument jsonText = QJsonDocument::fromJson(reply->readAll());
-    auto translatedText = jsonText.object().value("text").toArray()[0].toString();
-    qDebug() << translatedText << "\n";
+    if (!reply->isReadable()) {
+        return;
+    }
+    QJsonArray jsonText = QJsonDocument::fromJson(reply->readAll()).object().value("text").toArray();
+    if (jsonText.size() == 0) {
+        return;
+    }
+    auto translatedText = jsonText[0].toString();
     emit translated(translatedText);
 }
 
+void Translator::abort_all() {
+    foreach (auto &reply, manager->findChildren<QNetworkReply *>()) {
+        if (reply->isReadable()) {
+            reply->abort();
+        }
+    }
+}

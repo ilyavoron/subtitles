@@ -8,32 +8,29 @@
 #include <QTimer>
 
 #include "subtitles_settings.h"
+#include "translator.h"
 
 class SubtitlesWindow : public QWidget {
     Q_OBJECT
 private:
-    class TranslationWindow : public QWidget {
-    private:
-        QLabel wordToTranslate{this};
-    public:
-        TranslationWindow();
-        void translate(QString word);
-    };
-
     SubtitlesSettings *settings;
     QLabel *lbl;
     QVector <QRect> wordsBounds;
     QVector <QString> words;
     QTimer timer;
     int curWordIndex;
-    TranslationWindow translWindow;
+    QLabel translWindow;
+    Translator translator;
 
     int string_width(QString &str);
     void paintEvent(QPaintEvent *event) override;
-    void mouseReleaseEvent(QMouseEvent * event) override;
 
 private slots:
     void check_bounds();
+    void change_translation_status(bool is_highlighted);
+    void show_translation(QString translation);
+signals:
+    void word_in_focus(bool is_highlighted);
 public:
     SubtitlesWindow(bool isTransl = false);
     void set_center_coords(int x, int y);

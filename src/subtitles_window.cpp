@@ -2,9 +2,7 @@
 
 #include <QPainter>
 #include <QPaintEvent>
-#include <QBrush>
 #include <QDebug>
-#include <QChar>
 #include <iostream>
 
 SubtitlesWindow::SubtitlesWindow(bool isTransl) {
@@ -41,9 +39,16 @@ SubtitlesWindow::SubtitlesWindow(bool isTransl) {
 
     curWordIndex = -1;
 
+    translWindow.setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
+    translWindow.resize(200, 40);
+    translWindow.move(0, 0);
+
     if (isTransl) {
         translWindow.close();
     }
+
+    connect(this, SIGNAL(word_in_focus(bool)), this, SLOT(change_translation_status(bool)));
+    connect(&translator, SIGNAL(translated(QString)), this, SLOT(show_translation(QString)));
 }
 
 void SubtitlesWindow::paintEvent(QPaintEvent *event) {
@@ -173,32 +178,31 @@ void SubtitlesWindow::check_bounds() {
         if (wordGlobalBounds.contains(globalCursorPos)) {
             if (curWordIndex != i) {
                 curWordIndex = i;
+                emit word_in_focus(true);
                 this->update();
             }
             return;
         }
     }
     if (curWordIndex != -1) {
+        emit word_in_focus(false);
         curWordIndex = -1;
         this->update();
     }
 }
 
-void SubtitlesWindow::mouseReleaseEvent(QMouseEvent *event) {
-    if(event->button() == Qt::LeftButton)  {
-        if (curWordIndex != -1) {
-            translWindow.show();
-            translWindow.translate(words[curWordIndex]);
-        }
+void SubtitlesWindow::change_translation_status(bool is_highlighted) {
+    if (is_highlighted) {
+        translator.translate(words[curWordIndex]);
+        translWindow.setText("translating...");
+        translWindow.show();
+    }
+    else {
+        translWindow.hide();
+        translator.abort_all();
     }
 }
 
-SubtitlesWindow::TranslationWindow::TranslationWindow() {
-    this->setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
-    this->resize(200, 200);
-}
-
-void SubtitlesWindow::TranslationWindow::translate(QString word) {
-    wordToTranslate.setText(word);
-    wordToTranslate.adjustSize();
+void SubtitlesWindow::show_translation(QString translation) {
+    translWindow.setText(translation);
 }
