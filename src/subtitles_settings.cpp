@@ -12,7 +12,7 @@ SubtitlesSettings::SubtitlesSettings(QWidget *_subtitlesWindow){
     subtitlesWindow = _subtitlesWindow;
 
     font.setFamily("Arial Black");
-    font.setPixelSize(20);
+    font.setPixelSize(26);
     backgroundColor = QColor::fromRgb(0, 0, 0);
     textColor = QColor::fromRgb(255, 255, 255);
     transp = 0.2;
@@ -82,7 +82,7 @@ SubtitlesSettings::SubtitlesSettings(QWidget *_subtitlesWindow){
     btnOk->setGeometry(20, 350, 93, 28);
     QObject::connect(btnOk, SIGNAL(clicked()), this, SLOT(ok_pressed()));
 
-    QPushButton *btnReset = new QPushButton("Reset", this);
+    QPushButton *btnReset = new QPushBut ton("Reset", this);
     btnReset->setGeometry(140, 350, 93, 28);
     QObject::connect(btnReset, SIGNAL(clicked()), this, SLOT(reset_settings()));
 }
@@ -128,7 +128,7 @@ void SubtitlesSettings::change_position() {
 
 void SubtitlesSettings::reset_settings(){
     font.setFamily("Arial Black");
-    font.setPixelSize(20);
+    font.setPixelSize(26);
     backgroundColor = QColor::fromRgb(0, 0, 0);
     textColor = QColor::fromRgb(255, 255, 255);
     transp = 0.2;

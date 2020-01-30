@@ -195,7 +195,6 @@ SubSetupWindow::SubSetupWindow(QSize screenSize_, int num, QWidget *menu, int wi
     QObject::connect(clock, SIGNAL(time_changed(QString)), &miniTimer, SLOT(change_time(QString)));
     miniTimer.setGeometry(screenSize_.width() - 75, 0, 75, 20);
     miniTimer.setWindowFlags(Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint);
-    miniTimer.show();
 }
 
 void SubSetupWindow::browse_file1() {
