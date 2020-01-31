@@ -3,7 +3,6 @@
 
 #include <QPushButton>
 #include <QLabel>
-#include <QDebug>
 
 SubtitlesSettings::SubtitlesSettings(QWidget *_subtitlesWindow){
     this->setFixedSize(259, 397);
@@ -12,7 +11,7 @@ SubtitlesSettings::SubtitlesSettings(QWidget *_subtitlesWindow){
     subtitlesWindow = _subtitlesWindow;
 
     font.setFamily("Arial Black");
-    font.setPixelSize(26);
+    font.setPixelSize(31);
     backgroundColor = QColor::fromRgb(0, 0, 0);
     textColor = QColor::fromRgb(255, 255, 255);
     transp = 0.2;
@@ -128,7 +127,7 @@ void SubtitlesSettings::change_position() {
 
 void SubtitlesSettings::reset_settings(){
     font.setFamily("Arial Black");
-    font.setPixelSize(26);
+    font.setPixelSize(31);
     backgroundColor = QColor::fromRgb(0, 0, 0);
     textColor = QColor::fromRgb(255, 255, 255);
     transp = 0.2;

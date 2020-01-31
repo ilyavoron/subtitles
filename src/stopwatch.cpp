@@ -1,7 +1,6 @@
 #include "stopwatch.h"
 #include <QTime>
 #include <QDebug>
-#include <unistd.h>
 #include <iostream>
 
 Stopwatch::Stopwatch(QWidget *parent) {

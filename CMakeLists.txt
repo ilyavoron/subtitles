@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.12)
 project(subtitles)
 
+set(CMAKE_PREFIX_PATH C:/Qt/5.14.1/mingw73_64/lib/cmake)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
 set(CMAKE_AUTOMOC ON)
@@ -10,6 +12,8 @@ set(SOURCE_FILES src/main.cpp src/main_menu.cpp include/main_menu.h src/subtitle
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 include_directories(./include/)
+
+find_package(Qt5Core REQUIRED)
 
 find_package(Qt5Widgets REQUIRED)
 
@@ -21,5 +25,5 @@ include_directories(${Qt5Gui_PRIVATE_INCLUDE_DIRS})
 
 add_executable(subtitles ${SOURCE_FILES})
 
-target_link_libraries(subtitles Qt5::Widgets Qt5::Gui Qt5::Network user32)
+target_link_libraries(subtitles Qt5::Core Qt5::Widgets Qt5::Gui Qt5::Network user32)
 

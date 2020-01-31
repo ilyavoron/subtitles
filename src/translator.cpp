@@ -41,6 +41,7 @@ void Translator::onfinish(QNetworkReply *reply) {
     }
     auto translatedText = jsonText[0].toString();
     emit translated(translatedText);
+    reply->deleteLater();
 }
 
 void Translator::abort_all() {

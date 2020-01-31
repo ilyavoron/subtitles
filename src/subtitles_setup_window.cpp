@@ -4,13 +4,10 @@
 #include <QGroupBox>
 #include <QPushButton>
 #include <QDoubleSpinBox>
-#include <QToolButton>
 #include <QFileDialog>
-#include <QDialog>
 #include <QTimeEdit>
 #include <QKeyEvent>
 #include <QDebug>
-#include <QWindow>
 #include <QStringList>
 
 #include "subtitles_setup_window.h"
@@ -188,7 +185,7 @@ SubSetupWindow::SubSetupWindow(QSize screenSize_, int num, QWidget *menu, int wi
     btnCancel->setGeometry(180, 110, 93, 41);
     QObject::connect(btnCancel, SIGNAL(clicked()), setTimeWindow, SLOT(close()));
 
-    transSubWindow.set_center_coords(960, 950);
+    transSubWindow.set_center_coords(960, 920);
     transSubWindow.change_text_color(QColor::fromRgb(217, 217, 58));
 
     //miniTimer
