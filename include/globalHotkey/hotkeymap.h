@@ -1,6 +1,7 @@
 #include <QtCore>
 
 #if defined(Q_OS_WIN)
+#include <windows.h>
 inline size_t QtKeyToWin(size_t key) {
     // TODO: other maping or full keys list
 

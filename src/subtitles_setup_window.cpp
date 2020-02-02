@@ -1,5 +1,5 @@
+#include "subtitles_setup_window.h"
 
-#include <QString>
 #include <QLabel>
 #include <QGroupBox>
 #include <QPushButton>
@@ -7,12 +7,7 @@
 #include <QFileDialog>
 #include <QTimeEdit>
 #include <QKeyEvent>
-#include <QDebug>
 #include <QStringList>
-
-#include "subtitles_setup_window.h"
-#include "main_menu.h"
-#include <iostream>
 
 
 void MiniTimer::change_time(QString timeString) {
@@ -20,8 +15,7 @@ void MiniTimer::change_time(QString timeString) {
 }
 
 
-SubSetupWindow::SubSetupWindow(QSize screenSize_, int num, QWidget *menu, int windowW, int windowH) {
-    mainMenu = menu;
+SubSetupWindow::SubSetupWindow(QSize screenSize_, int num, int windowW, int windowH) {
     active = false;
     translSubtitlesloaded = false;
     //Timer
@@ -192,6 +186,10 @@ SubSetupWindow::SubSetupWindow(QSize screenSize_, int num, QWidget *menu, int wi
     QObject::connect(clock, SIGNAL(time_changed(QString)), &miniTimer, SLOT(change_time(QString)));
     miniTimer.setGeometry(screenSize_.width() - 75, 0, 75, 20);
     miniTimer.setWindowFlags(Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint);
+
+    //global hotkey
+    hotkeyManager = new UGlobalHotkeys(this);
+    QObject::connect(hotkeyManager, SIGNAL(activated(size_t)), this, SLOT(global_hotkey_pressed(size_t)));
 }
 
 void SubSetupWindow::browse_file1() {
@@ -243,13 +241,19 @@ void SubSetupWindow::start_clicked() {
         active = false;
         clock->stop();
         hint1->hide();
-        ((MainMenu*)mainMenu)->starts(-1);
+        hotkeyManager->unregisterAllHotkeys();
     }
     else {
         btnStart->setText("Stop");
         active = true;
         hint1->show();
-        ((MainMenu*)mainMenu)->starts(1);
+        hotkeyManager->registerHotkey("T", 0);
+        hotkeyManager->registerHotkey("R", 1);
+        hotkeyManager->registerHotkey("Y", 2);
+        hotkeyManager->registerHotkey("Q", 3);
+        hotkeyManager->registerHotkey("W", 4);
+        hotkeyManager->registerHotkey("E", 5);
+        hotkeyManager->registerHotkey("H", 6);
     }
 }
 
@@ -273,23 +277,6 @@ void press_gl_key(WORD key_id) {
 
 void SubSetupWindow::stop_pressed() {
     if (active) {
-
-        /*INPUT ip;
-        // Set up a generic keyboard event.
-        ip.type = INPUT_KEYBOARD;
-        ip.ki.wScan = 0; // hardware scan code for key
-        ip.ki.time = 0;
-        ip.ki.dwExtraInfo = 0;
-
-        // Press the "Space" key
-        ip.ki.wVk = 0x20; // virtual-key code for the "Space" key
-        ip.ki.dwFlags = 0; // 0 for key press
-        SendInput(1, &ip, sizeof(INPUT));
-
-        // Release the "A" key
-        ip.ki.dwFlags = KEYEVENTF_KEYUP; // KEYEVENTF_KEYUP for key release
-        SendInput(1, &ip, sizeof(INPUT));*/
-
         INPUT input;
         input.type=INPUT_MOUSE;
         input.mi.dx=0;
@@ -376,5 +363,29 @@ void SubSetupWindow::change_minitimer_visibility() {
     }
     else {
         miniTimer.show();
+    }
+}
+
+void SubSetupWindow::global_hotkey_pressed(size_t id) {
+    if (id == 0) {
+        this->stop_pressed();
+    }
+    if (id == 1) {
+        this->rewind_back_pressed();
+    }
+    if (id == 2) {
+        this->rewind_forward_pressed();
+    }
+    if (id == 3) {
+        this->rewind_back_subs_pressed();
+    }
+    if (id == 4) {
+        this->reset_subs_pressed();
+    }
+    if (id == 5) {
+        this->rewind_forward_subs_pressed();
+    }
+    if (id == 6) {
+        this->change_minitimer_visibility();
     }
 }

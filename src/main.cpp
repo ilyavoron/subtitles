@@ -1,6 +1,7 @@
 #include <QApplication>
-#include "main_menu.h"
+#include "subtitles_setup_window.h"
 #include "subtitles_window.h"
+#include <QScreen>
 #include <iostream>
 
 int main(int argc, char **argv) {
@@ -10,9 +11,7 @@ int main(int argc, char **argv) {
     QApplication::setFont(mainFont);
 
     QSize screenSize = app.screens()[0]->size();
-    MainMenu menu(screenSize);
-    menu.show();
-    //SubtitlesWindow w(&mainFont);
-    //w.show();
+    SubSetupWindow newSub(screenSize);
+    newSub.show();
     return app.exec();
 }

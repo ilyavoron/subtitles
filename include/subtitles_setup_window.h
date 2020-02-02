@@ -13,6 +13,12 @@
 #include <QTimer>
 #include <QDoubleSpinBox>
 
+#include <globalHotkey/uglobalhotkeys.h>
+#include <globalHotkey/uglobal.h>
+#include <globalHotkey/ukeysequence.h>
+#include <globalHotkey/uexception.h>
+#include <globalHotkey/hotkeymap.h>
+
 
 class MiniTimer : public QLabel {
     Q_OBJECT
@@ -20,7 +26,7 @@ public slots:
     void change_time(QString timeText);
 };
 
-class SubSetupWindow : public QWidget {
+class SubSetupWindow : public QFrame {
     Q_OBJECT
 private:
     QLineEdit *pathMainSubs, *pathTranslSubs;
@@ -33,14 +39,14 @@ private:
     QPushButton *btnStart;
     QLabel *hint1;
     bool active;
-    QWidget *mainMenu;
     QComboBox *cboxCodec1, *cboxCodec2;
     QTimer *timer;
     QDoubleSpinBox *spBoxDelay1, *spBoxDelay2;
     bool translSubtitlesloaded;
     MiniTimer miniTimer;
+    UGlobalHotkeys *hotkeyManager;
 public:
-    explicit SubSetupWindow(QSize screenSize_, int num = 1, QWidget *menu = nullptr, int windowW = 781, int windowH = 422);
+    explicit SubSetupWindow(QSize screenSize_, int num = 1, int windowW = 781, int windowH = 422);
 public slots:
     void browse_file1();
     void browse_file2();
@@ -61,6 +67,7 @@ public slots:
     void open_settings2();
     void update_trans_subtitles();
     void change_minitimer_visibility();
+    void global_hotkey_pressed(size_t id);
 };
 
 
