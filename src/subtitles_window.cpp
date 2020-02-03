@@ -5,22 +5,22 @@
 #include <QDebug>
 #include <iostream>
 
-SubtitlesWindow::SubtitlesWindow(bool isTransl) {
+SubtitlesWindow::SubtitlesWindow(bool isTransl, QSettings *settings_) {
     this->setFocusPolicy(Qt::NoFocus);
     this->setFixedSize(400, 50);
     this->setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
     this->setAttribute(Qt::WA_NoSystemBackground, true);
     this->setAttribute(Qt::WA_TranslucentBackground, true);
-    settings = new SubtitlesSettings(this);
+    settings = new SubtitlesSettings(this, settings_, isTransl);
     QPalette windowCol;
-    windowCol.setColor(QPalette::WindowText, settings->textColor);
+    windowCol.setColor(QPalette::WindowText, settings->get_value<QColor>("subs/text_color"));
     this->setPalette(windowCol);
 
     lbl = new QLabel("Test", this);
     lbl->setAlignment(Qt::AlignCenter);
     lbl->setGeometry(this->rect());
     lbl->setTextInteractionFlags(Qt::TextSelectableByMouse);
-    lbl->setFont(settings->font);
+    lbl->setFont(settings->get_value("subs/font").value<QFont>());
     lbl->setWindowFlags(Qt::WindowStaysOnTopHint);
     lbl->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     move_center();
@@ -53,9 +53,9 @@ SubtitlesWindow::SubtitlesWindow(bool isTransl) {
 
 void SubtitlesWindow::paintEvent(QPaintEvent *event) {
     QPainter *painter = new QPainter(this);
-    QBrush *brush = new QBrush(settings->backgroundColor);
-    painter->setOpacity(settings->transp);
-    painter->setPen(settings->backgroundColor);
+    QBrush *brush = new QBrush(settings->get_value<QColor>("subs/background_color"));
+    painter->setOpacity(settings->get_value<double>("subs/opacity"));
+    painter->setPen(settings->get_value<QColor>("subs/background_color"));
     painter->setBrush(*brush);
     painter->drawRect(this->rect());
     painter->setOpacity(1);
@@ -63,23 +63,23 @@ void SubtitlesWindow::paintEvent(QPaintEvent *event) {
         painter->drawRect(wordsBounds[curWordIndex]);
     }
     QPalette windowCol;
-    windowCol.setColor(QPalette::WindowText, settings->textColor);
+    windowCol.setColor(QPalette::WindowText, settings->get_value<QColor>("subs/text_color"));
     this->setPalette(windowCol);
     delete painter;
 }
 
 void SubtitlesWindow::set_center_coords(int x, int y) {
-    settings->cx = x;
+    settings->set_value("subs/posx", x);
     settings->spX->setValue(x);
-    settings->cy = y;
+    settings->set_value("subs/posy", y);
     settings->spY->setValue(y);
 }
 
 void SubtitlesWindow::move_center() {
     int w = this->width();
     int h = this->height();
-    int rx = settings->cx - w / 2;
-    int ry = settings->cy - h / 2;
+    int rx = settings->get_value<int>("subs/posx") - w / 2;
+    int ry = settings->get_value<int>("subs/posy") - h / 2;
     this->move(rx, ry);
 }
 
@@ -94,7 +94,7 @@ void SubtitlesWindow::set_text(QVector<QString> &str) {
     QLabel tmplbl;
     tmplbl.hide();
     int w = 0;
-    tmplbl.setFont(settings->font);
+    tmplbl.setFont(settings->get_value<QFont>("subs/font"));
     for (int i = 0; i < str.size(); i++) {
         string += str[i];
         tmplbl.setText(str[i]);

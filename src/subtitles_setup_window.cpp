@@ -190,6 +190,10 @@ SubSetupWindow::SubSetupWindow(QSize screenSize_, int num, int windowW, int wind
     //global hotkey
     hotkeyManager = new UGlobalHotkeys(this);
     QObject::connect(hotkeyManager, SIGNAL(activated(size_t)), this, SLOT(global_hotkey_pressed(size_t)));
+
+    //settings
+    settingsFile = QApplication::applicationDirPath() + ":/settings.ini";
+    settings = new QSettings(settingsFile, QSettings::NativeFormat, this);
 }
 
 void SubSetupWindow::browse_file1() {
@@ -388,4 +392,8 @@ void SubSetupWindow::global_hotkey_pressed(size_t id) {
     if (id == 6) {
         this->change_minitimer_visibility();
     }
+}
+
+void SubSetupWindow::set_default_settings() {
+    
 }

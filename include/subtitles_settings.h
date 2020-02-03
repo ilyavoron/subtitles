@@ -6,17 +6,21 @@
 #include <QSpinBox>
 #include <QSlider>
 #include <QFontComboBox>
+#include <QSettings>
 
 class SubtitlesSettings : public QDialog {
     Q_OBJECT
 private:
+
     QWidget *subtitlesWindow;
 public:
-    SubtitlesSettings(QWidget *_subtitlesWindow);
-    QFont font;
-    QColor backgroundColor, textColor;
-    double transp;
-    int cx, cy;
+    SubtitlesSettings(QWidget *_subtitlesWindow, QSettings *settings_, bool isTransl);
+    void set_value(QString key, QVariant val);
+    template <typename T>
+    T get_value(QString key);
+
+    QSettings *settings;
+    QString keyPrefix;
     QColorDialog backColorDialog, textColorDialog;
     QSpinBox *spX, *spY;
     QSlider *transpSlider;

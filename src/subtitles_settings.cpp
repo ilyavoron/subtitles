@@ -4,19 +4,25 @@
 #include <QPushButton>
 #include <QLabel>
 
-SubtitlesSettings::SubtitlesSettings(QWidget *_subtitlesWindow){
+SubtitlesSettings::SubtitlesSettings(QWidget *_subtitlesWindow, QSettings *settings_, bool isTransl){
     this->setFixedSize(259, 397);
-    //this->setModal(true);
     this->setWindowFlags(Qt::WindowTitleHint);
     subtitlesWindow = _subtitlesWindow;
+    settings = settings_;
+    if (isTransl) {
+        keyPrefix = "main/";
+    }
+    else {
+        keyPrefix = "transl/";
+    }
 
-    font.setFamily("Arial Black");
+    /*font.setFamily("Arial Black");
     font.setPixelSize(31);
     backgroundColor = QColor::fromRgb(0, 0, 0);
     textColor = QColor::fromRgb(255, 255, 255);
     transp = 0.2;
     cx = 960;
-    cy = 1020;
+    cy = 1020;*/
 
     QPushButton *btnBackgroundColor = new QPushButton("Background color", this);
     btnBackgroundColor->setGeometry(30, 20, 201, 31);
@@ -36,7 +42,7 @@ SubtitlesSettings::SubtitlesSettings(QWidget *_subtitlesWindow){
     transpSlider->setGeometry(40, 150, 181, 22);
     transpSlider->setMinimum(0);
     transpSlider->setMaximum(100);
-    transpSlider->setValue((int)(transp * 100));
+    transpSlider->setValue((int)(this->get_value<double>("subs/opacity") * 100));
     transpSlider->setSingleStep(1);
     connect(transpSlider, SIGNAL(valueChanged(int)), this, SLOT(set_transp(int)));
 
@@ -44,14 +50,14 @@ SubtitlesSettings::SubtitlesSettings(QWidget *_subtitlesWindow){
     lbl2->setGeometry(20, 190, 91, 21);
 
     comboBox = new QFontComboBox(this);
-    comboBox->setCurrentFont(font);
+    comboBox->setCurrentFont(this->get_value<QFont>("subs/font"));
     comboBox->setGeometry(30, 220, 141, 31);
     QObject::connect(comboBox, SIGNAL(currentFontChanged(const QFont &)), this, SLOT(set_font(const QFont &)));
 
     spinBox = new QSpinBox(this);
     spinBox->setMaximum(40);
     spinBox->setMinimum(5);
-    spinBox->setValue(font.pixelSize());
+    spinBox->setValue(this->get_value<QFont>("subs/font").pixelSize());
     spinBox->setGeometry(180, 220, 42, 31);
     QObject::connect(spinBox, SIGNAL(valueChanged(int)), this, SLOT(set_font_size(int)));
 
@@ -67,14 +73,14 @@ SubtitlesSettings::SubtitlesSettings(QWidget *_subtitlesWindow){
     spX->setGeometry(60, 300, 61, 22);
     spX->setMaximum(1920);
     spX->setMinimum(0);
-    spX->setValue(cx);
+    spX->setValue(this->get_value<int>("subs/posx"));
     QObject::connect(spX, SIGNAL(valueChanged(int)), this, SLOT(change_position()));
 
     spY = new QSpinBox(this);
     spY->setGeometry(161, 300, 61, 22);
     spY->setMaximum(1080);
     spY->setMinimum(0);
-    spY->setValue(cy);
+    spY->setValue(this->get_value<int>("subs/posy"));
     QObject::connect(spY, SIGNAL(valueChanged(int)), this, SLOT(change_position()));
 
     QPushButton *btnOk = new QPushButton("OK", this);
@@ -95,37 +101,38 @@ void SubtitlesSettings::open_text_color_window() {
 }
 
 void SubtitlesSettings::set_transp(int new_transp) {
-    transp = (double)new_transp / 100;
+    this->set_value("subs/opacity", (double)new_transp / 100);
     ((SubtitlesWindow*)subtitlesWindow)->update();
 }
 
 void SubtitlesSettings::set_font(const QFont &new_font) {
-    font = new_font;
-    ((SubtitlesWindow*)subtitlesWindow)->change_font(font);
+    this->set_value("subs/font", new_font);
+    ((SubtitlesWindow*)subtitlesWindow)->change_font(new_font);
 }
 
 void SubtitlesSettings::set_font_size(int fontSize) {
+    QFont font = this->get_value<QFont>("subs/font");
     font.setPixelSize(fontSize);
-    ((SubtitlesWindow*)subtitlesWindow)->change_font(font);
+    set_font(font);
 }
 
 void SubtitlesSettings::change_background_color(const QColor &new_color) {
-    backgroundColor = new_color;
+    this->set_value("subs/background_color", new_color);
     subtitlesWindow->update();
 }
 
 void SubtitlesSettings::change_text_color(const QColor &new_color) {
-    textColor = new_color;
+    this->set_value("subs/text_color", new_color);
     subtitlesWindow->update();
 }
 
 void SubtitlesSettings::change_position() {
-    cx = spX->value();
-    cy = spY->value();
+    this->set_value("subs/posx", spX->value());
+    this->set_value("subs/posy", spY->value());
     ((SubtitlesWindow*)subtitlesWindow)->move_center();
 }
 
-void SubtitlesSettings::reset_settings(){
+/*void SubtitlesSettings::reset_settings(){
     font.setFamily("Arial Black");
     font.setPixelSize(31);
     backgroundColor = QColor::fromRgb(0, 0, 0);
@@ -140,9 +147,18 @@ void SubtitlesSettings::reset_settings(){
     spinBox->setValue(font.pixelSize());
     subtitlesWindow->update();
     ((SubtitlesWindow*)subtitlesWindow)->change_font(font);
-}
+}*/
 
 void SubtitlesSettings::ok_pressed() {
     subtitlesWindow->hide();
     this->close();
+}
+
+void SubtitlesSettings::set_value(QString key, QVariant val) {
+    settings->setValue(keyPrefix + key, val);
+}
+
+template <typename T>
+T SubtitlesSettings::get_value(QString key) {
+    return settings->value(key).value<T>();
 }

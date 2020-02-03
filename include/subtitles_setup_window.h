@@ -12,6 +12,7 @@
 #include <QComboBox>
 #include <QTimer>
 #include <QDoubleSpinBox>
+#include <QSettings>
 
 #include <globalHotkey/uglobalhotkeys.h>
 #include <globalHotkey/uglobal.h>
@@ -29,9 +30,11 @@ public slots:
 class SubSetupWindow : public QFrame {
     Q_OBJECT
 private:
+    void set_default_settings();
+
     QLineEdit *pathMainSubs, *pathTranslSubs;
     Subtitles mainSubtitles, transSubtitles;
-    SubtitlesWindow mainSubWindow, transSubWindow{true};
+    SubtitlesWindow mainSubWindow{false, settings}, transSubWindow{true, settings};
     QFileDialog *fileDialog1, *fileDialog2;
     Stopwatch *clock;
     QDialog *setTimeWindow;
@@ -45,6 +48,8 @@ private:
     bool translSubtitlesloaded;
     MiniTimer miniTimer;
     UGlobalHotkeys *hotkeyManager;
+    QSettings *settings;
+    QString settingsFile;
 public:
     explicit SubSetupWindow(QSize screenSize_, int num = 1, int windowW = 781, int windowH = 422);
 public slots:
