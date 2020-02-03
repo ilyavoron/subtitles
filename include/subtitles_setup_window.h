@@ -30,11 +30,12 @@ public slots:
 class SubSetupWindow : public QFrame {
     Q_OBJECT
 private:
+    void set_value(QString key, QVariant val);
     void set_default_settings();
 
     QLineEdit *pathMainSubs, *pathTranslSubs;
     Subtitles mainSubtitles, transSubtitles;
-    SubtitlesWindow mainSubWindow{false, settings}, transSubWindow{true, settings};
+    SubtitlesWindow *mainSubWindow, *transSubWindow;
     QFileDialog *fileDialog1, *fileDialog2;
     Stopwatch *clock;
     QDialog *setTimeWindow;

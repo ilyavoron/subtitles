@@ -39,4 +39,9 @@ public slots:
     void ok_pressed();
 };
 
+template <typename T>
+T SubtitlesSettings::get_value(QString key) {
+    return settings->value(keyPrefix + key).value<T>();
+}
+
 #endif //SUBTITLES_SUBTITLES_SETTINGS_H

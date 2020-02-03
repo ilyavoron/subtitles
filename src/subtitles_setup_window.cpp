@@ -23,6 +23,19 @@ SubSetupWindow::SubSetupWindow(QSize screenSize_, int num, int windowW, int wind
     timer->setInterval(100);
     QObject::connect(timer, SIGNAL(timeout()), this, SLOT(update_subtitles()));
 
+    //settings
+    settingsFile = QApplication::applicationDirPath() + "/settings.ini";
+    if (!QFile::exists(settingsFile)) {
+        QFile mFile(settingsFile);
+        mFile.open(QIODevice::WriteOnly);
+        mFile.close();
+    }
+    settings = new QSettings(settingsFile, QSettings::IniFormat, this);
+    set_default_settings();
+
+    mainSubWindow = new SubtitlesWindow(false, settings);
+    transSubWindow = new SubtitlesWindow(true, settings);
+
     //Window
     this->setFixedSize(windowW, windowH);
     QPalette windowCol;
@@ -179,8 +192,8 @@ SubSetupWindow::SubSetupWindow(QSize screenSize_, int num, int windowW, int wind
     btnCancel->setGeometry(180, 110, 93, 41);
     QObject::connect(btnCancel, SIGNAL(clicked()), setTimeWindow, SLOT(close()));
 
-    transSubWindow.set_center_coords(960, 920);
-    transSubWindow.change_text_color(QColor::fromRgb(217, 217, 58));
+    transSubWindow->set_center_coords(960, 920);
+    transSubWindow->change_text_color(QColor::fromRgb(217, 217, 58));
 
     //miniTimer
     QObject::connect(clock, SIGNAL(time_changed(QString)), &miniTimer, SLOT(change_time(QString)));
@@ -190,10 +203,6 @@ SubSetupWindow::SubSetupWindow(QSize screenSize_, int num, int windowW, int wind
     //global hotkey
     hotkeyManager = new UGlobalHotkeys(this);
     QObject::connect(hotkeyManager, SIGNAL(activated(size_t)), this, SLOT(global_hotkey_pressed(size_t)));
-
-    //settings
-    settingsFile = QApplication::applicationDirPath() + ":/settings.ini";
-    settings = new QSettings(settingsFile, QSettings::NativeFormat, this);
 }
 
 void SubSetupWindow::browse_file1() {
@@ -296,14 +305,14 @@ void SubSetupWindow::stop_pressed() {
             timer->stop();
             if (translSubtitlesloaded) {
                 update_trans_subtitles();
-                transSubWindow.show();
+                transSubWindow->show();
             }
         }
         else {
             clock->start();
             timer->start();
             if (translSubtitlesloaded) {
-                transSubWindow.hide();
+                transSubWindow->hide();
             }
         }
     }
@@ -339,25 +348,25 @@ void SubSetupWindow::update_subtitles() {
     QVector <QString> str;
     int changed = mainSubtitles.get_subtitles(clock->get_time() - (int)spBoxDelay1->value() * 1000, str);
     if (changed) {
-        mainSubWindow.set_text(str);
+        mainSubWindow->set_text(str);
     }
 }
 
 void SubSetupWindow::open_settings1() {
-    mainSubWindow.show_settings();
-    mainSubWindow.show();
+    mainSubWindow->show_settings();
+    mainSubWindow->show();
 }
 
 void SubSetupWindow::open_settings2() {
-    transSubWindow.show_settings();
-    transSubWindow.show();
+    transSubWindow->show_settings();
+    transSubWindow->show();
 }
 
 void SubSetupWindow::update_trans_subtitles() {
     QVector <QString> str;
     int changed = transSubtitles.get_subtitles(clock->get_time() - (int)spBoxDelay2->value() * 1000, str);
     if (changed) {
-        transSubWindow.set_text(str);
+        transSubWindow->set_text(str);
     }
 }
 
@@ -394,6 +403,28 @@ void SubSetupWindow::global_hotkey_pressed(size_t id) {
     }
 }
 
+void SubSetupWindow::set_value(QString key, QVariant val) {
+    if (!settings->contains("subs/main/" + key)) {
+        settings->setValue("subs/main/" + key, val);
+    }
+    if (!settings->contains("subs/transl/" + key)) {
+        settings->setValue("subs/transl/" + key, val);
+    }
+}
+
 void SubSetupWindow::set_default_settings() {
-    
+    QFont font;
+    font.setFamily("Arial Black");
+    font.setPixelSize(31);
+    this->set_value("font", font);
+    QColor backgroundColor = QColor::fromRgb(0, 0, 0);
+    this->set_value("background_color", backgroundColor);
+    QColor textColor = QColor::fromRgb(255, 255, 255);
+    this->set_value("text_color", textColor);
+    double transp = 0.2;
+    this->set_value("opacity", transp);
+    int posx = 960;
+    this->set_value("posx", posx);
+    int posy = 1020;
+    this->set_value("posy", posy);
 }
