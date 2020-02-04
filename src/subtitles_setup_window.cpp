@@ -83,8 +83,8 @@ SubSetupWindow::SubSetupWindow(QSize screenSize_, int num, int windowW, int wind
     QObject::connect(btnConfigure1, SIGNAL(clicked()), this, SLOT(open_settings1()));
 
     //Label "Set delay:"
-    QLabel *btnSetDel = new QLabel("Set delay:", mainSubBox);
-    btnSetDel->setGeometry(230, 110, 81, 31);
+    QLabel *btnSetDel = new QLabel("Delay:", mainSubBox);
+    btnSetDel->setGeometry(260, 110, 81, 31);
 
     //Spin box, delay
     spBoxDelay1 = new QDoubleSpinBox(mainSubBox);
@@ -104,6 +104,11 @@ SubSetupWindow::SubSetupWindow(QSize screenSize_, int num, int windowW, int wind
     translSubBox->setTitle("Translation subtitles");
     translSubBox->setCheckable(true);
     translSubBox->setChecked(false);
+
+    //Translation subtitles always on
+    checkBoxTranslOn = new QCheckBox("Always on", translSubBox);
+    checkBoxTranslOn->move(140, 112);
+    connect(checkBoxTranslOn, SIGNAL(stateChanged(int)), this, SLOT(transl_state_changed(int)));
 
     //Label "Choose subtitles:"
     QLabel *lblChoSub2 = new QLabel("Choose subtitles:", translSubBox);
@@ -132,8 +137,8 @@ SubSetupWindow::SubSetupWindow(QSize screenSize_, int num, int windowW, int wind
     QObject::connect(btnConfigure2, SIGNAL(clicked()), this, SLOT(open_settings2()));
 
     //Label "Set delay:"
-    QLabel *btnSetDel2 = new QLabel("Set delay:", translSubBox);
-    btnSetDel2->setGeometry(230, 110, 81, 31);
+    QLabel *btnSetDel2 = new QLabel("Delay:", translSubBox);
+    btnSetDel2->setGeometry(260, 110, 81, 31);
 
     //Spin box, delay
     spBoxDelay2 = new QDoubleSpinBox(translSubBox);
@@ -191,9 +196,6 @@ SubSetupWindow::SubSetupWindow(QSize screenSize_, int num, int windowW, int wind
     QPushButton *btnCancel = new QPushButton("Cancel", setTimeWindow);
     btnCancel->setGeometry(180, 110, 93, 41);
     QObject::connect(btnCancel, SIGNAL(clicked()), setTimeWindow, SLOT(close()));
-
-    transSubWindow->set_center_coords(960, 920);
-    transSubWindow->change_text_color(QColor::fromRgb(217, 217, 58));
 
     //miniTimer
     QObject::connect(clock, SIGNAL(time_changed(QString)), &miniTimer, SLOT(change_time(QString)));
@@ -270,6 +272,17 @@ void SubSetupWindow::start_clicked() {
     }
 }
 
+void SubSetupWindow::transl_state_changed(int new_state) {
+    if (new_state == Qt::Checked) {
+        transSubWindow->show();
+    }
+    else {
+        if (clock->is_active()) {
+            transSubWindow->hide();
+        }
+    }
+}
+
 void press_gl_key(WORD key_id) {
     INPUT ip;
     // Set up a generic keyboard event.
@@ -311,7 +324,7 @@ void SubSetupWindow::stop_pressed() {
         else {
             clock->start();
             timer->start();
-            if (translSubtitlesloaded) {
+            if (translSubtitlesloaded && !checkBoxTranslOn->isChecked()) {
                 transSubWindow->hide();
             }
         }
@@ -349,6 +362,9 @@ void SubSetupWindow::update_subtitles() {
     int changed = mainSubtitles.get_subtitles(clock->get_time() - (int)spBoxDelay1->value() * 1000, str);
     if (changed) {
         mainSubWindow->set_text(str);
+    }
+    if (checkBoxTranslOn->isChecked()) {
+        update_trans_subtitles();
     }
 }
 

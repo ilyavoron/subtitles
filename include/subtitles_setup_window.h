@@ -13,6 +13,7 @@
 #include <QTimer>
 #include <QDoubleSpinBox>
 #include <QSettings>
+#include <QCheckBox>
 
 #include <globalHotkey/uglobalhotkeys.h>
 #include <globalHotkey/uglobal.h>
@@ -47,6 +48,7 @@ private:
     QTimer *timer;
     QDoubleSpinBox *spBoxDelay1, *spBoxDelay2;
     bool translSubtitlesloaded;
+    QCheckBox *checkBoxTranslOn;
     MiniTimer miniTimer;
     UGlobalHotkeys *hotkeyManager;
     QSettings *settings;
@@ -74,6 +76,7 @@ public slots:
     void update_trans_subtitles();
     void change_minitimer_visibility();
     void global_hotkey_pressed(size_t id);
+    void transl_state_changed(int new_state);
 };
 
 
